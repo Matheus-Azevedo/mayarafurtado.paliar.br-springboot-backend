@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: mayarafurtado.paliar.br-springboot-backend
+  config:
+    import: optional:file:.env.properties[.properties]
+
+  # JPA
+  jpa:
+    show-sql: true
+    open-in-view: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update # Mudar para update ou create, dependendo da necessidade
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/local_mysql_paliar_db?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
