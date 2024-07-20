@@ -1,8 +1,6 @@
 spring:
   application:
     name: mayarafurtado.paliar.br-springboot-backend
-  config:
-    import: optional:file:.env.properties[.properties]
 
   # JPA
   jpa:
