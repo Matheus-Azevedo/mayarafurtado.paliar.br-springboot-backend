@@ -1,0 +1,11 @@
+services:
+  database:
+    image: "mysql"
+    env_file:
+      - ".env"
+    ports:
+      - "3306:3306"
+    volumes:
+        - "./database_paliar:/var/lib/mysql"
+volumes:
+    database_paliar:
