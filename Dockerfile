@@ -17,7 +17,7 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 
 # Copie o JAR gerado do estágio de build anterior para o container
-COPY --from=build /app/target/escalapro-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
 # Exponha a porta 8085, que é a porta configurada no application.yml
 EXPOSE 8080
