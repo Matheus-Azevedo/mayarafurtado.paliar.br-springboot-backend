@@ -23,7 +23,7 @@ public class TestimonyModel implements Serializable {
   private String name;
 
   @Column(length = 100)
-  private String email;
+  private String telephone;
 
   @Column(length = 1000)
   private String testimony;

@@ -1,6 +1,8 @@
 spring:
   application:
     name: mayarafurtado.paliar.br-springboot-backend
+  config:
+    import: optional:file:.env.properties[.properties]
 
   # JPA
   jpa:
@@ -8,15 +10,22 @@ spring:
     open-in-view: false
     generate-ddl: true
     hibernate:
-      ddl-auto: update # Mudar para update ou create, dependendo da necessidade
+      ddl-auto: update # Pode ser "create" ou "validate" conforme necessário
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           lob:
             non_contextual_creation: true
+
   datasource:
-    url: jdbc:mysql://localhost:3306/local_mysql_paliar_db?allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://${PGHOST}:5432/${PGDATABASE}?sslmode=require
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
+
+  doc:
+    swagger-ui:
+      enabled: true
+      url: /v3/api-docs
+    api-docs:
+      path: /v3/api-docs

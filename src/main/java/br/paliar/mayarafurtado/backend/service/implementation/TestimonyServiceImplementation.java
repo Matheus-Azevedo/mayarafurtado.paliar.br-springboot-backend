@@ -4,11 +4,13 @@ import br.paliar.mayarafurtado.backend.service.TestimonyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import br.paliar.mayarafurtado.backend.dto.request.TestimonyRequestDTO;
 import br.paliar.mayarafurtado.backend.dto.response.TestimonyResponseDTO;
 import br.paliar.mayarafurtado.backend.model.TestimonyModel;
 import br.paliar.mayarafurtado.backend.repository.TestimonyRepository;
+import java.util.stream.Collectors;
+
 
 @Service
 public class TestimonyServiceImplementation implements TestimonyService {
@@ -29,7 +31,7 @@ public class TestimonyServiceImplementation implements TestimonyService {
                                     .findById(id)
                                     .orElseThrow(() -> new IllegalArgumentException("Testimony not found"));
     testimonyModel.setName(testimony.getName());
-    testimonyModel.setEmail(testimony.getEmail());
+    testimonyModel.setTelephone(testimony.getTelephone());
     testimonyModel.setTestimony(testimony.getTestimony());
     return modelMapper.map(testimonyRepository.save(testimonyModel), TestimonyResponseDTO.class);
   }
@@ -38,8 +40,11 @@ public class TestimonyServiceImplementation implements TestimonyService {
     testimonyRepository.deleteById(id);
   }
   
-  public TestimonyResponseDTO findAll() {
-    return modelMapper.map(testimonyRepository.findAll(), TestimonyResponseDTO.class);
+  public List<TestimonyResponseDTO> findAll() {
+    List<TestimonyModel> testimonies = testimonyRepository.findAll();
+    return testimonies.stream()
+                      .map(testimony -> modelMapper.map(testimony, TestimonyResponseDTO.class))
+                      .collect(Collectors.toList());
   }
   
   public TestimonyResponseDTO findByName(String name) {
@@ -47,8 +52,8 @@ public class TestimonyServiceImplementation implements TestimonyService {
     return modelMapper.map(testimony, TestimonyResponseDTO.class);
   }
   
-  public TestimonyResponseDTO findByEmail(String email) {
-    TestimonyModel testimony = testimonyRepository.findByEmail(email);
+  public TestimonyResponseDTO findByTelephone(String telephone) {
+    TestimonyModel testimony = testimonyRepository.findByTelephone(telephone);
     return modelMapper.map(testimony, TestimonyResponseDTO.class);
   }
   

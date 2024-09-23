@@ -10,5 +10,5 @@ public interface TestimonyRepository extends JpaRepository<TestimonyModel, Integ
 
   public TestimonyModel findByName(String name);
 
-  public TestimonyModel findByEmail(String email);
+  public TestimonyModel findByTelephone(String telephone);
 }

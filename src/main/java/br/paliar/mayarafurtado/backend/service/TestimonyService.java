@@ -2,6 +2,7 @@ package br.paliar.mayarafurtado.backend.service;
 
 import br.paliar.mayarafurtado.backend.dto.request.TestimonyRequestDTO;
 import br.paliar.mayarafurtado.backend.dto.response.TestimonyResponseDTO;
+import java.util.List;
 
 public interface TestimonyService {
 
@@ -11,9 +12,9 @@ public interface TestimonyService {
 
     void delete(Integer id);
 
-    TestimonyResponseDTO findAll();
+    List<TestimonyResponseDTO> findAll();
 
     TestimonyResponseDTO findByName(String name);
 
-    TestimonyResponseDTO findByEmail(String email);
+    TestimonyResponseDTO findByTelephone(String telephone);
 }

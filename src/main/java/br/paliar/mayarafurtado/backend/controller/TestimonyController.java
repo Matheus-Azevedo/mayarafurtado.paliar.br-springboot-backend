@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.paliar.mayarafurtado.backend.dto.request.TestimonyRequestDTO;
 import br.paliar.mayarafurtado.backend.dto.response.TestimonyResponseDTO;
 import jakarta.validation.Valid;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +45,7 @@ public class TestimonyController {
   }
 
   @GetMapping("/findAll")
-  public ResponseEntity<TestimonyResponseDTO> findAll() {
+  public ResponseEntity<List<TestimonyResponseDTO>> findAll() {
     return ResponseEntity.ok(testimonyService.findAll());
   }
   
@@ -54,9 +54,9 @@ public class TestimonyController {
     return ResponseEntity.ok(testimonyService.findByName(name));
   }
 
-  @GetMapping("/findByEmail/{email}")
-  public ResponseEntity<TestimonyResponseDTO> findByEmail(@PathVariable String email) {
-    return ResponseEntity.ok(testimonyService.findByEmail(email));
+  @GetMapping("/findByTelephone/{telephone}")
+  public ResponseEntity<TestimonyResponseDTO> findByTelephone(@PathVariable String telephone) {
+    return ResponseEntity.ok(testimonyService.findByTelephone(telephone));
   }
 
 }

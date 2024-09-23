@@ -9,7 +9,7 @@ public class TestimonyResponseDTO {
   
   private String name;
   
-  private String email;
+  private String telephone;
   
   private String testimony;
 }
