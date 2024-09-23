@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  mayarafuratado-paliar-br:
+    container_name: mayarafuratado-paliar-br
+    hostname: mayarafuratado-paliar-br
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.properties
+      # CLIENT_ID: myclientid
+      # CLIENT_SECRET: myclientsecret
+      # JWT_DURATION: 86400
+      # CORS_ORIGINS: "*"
