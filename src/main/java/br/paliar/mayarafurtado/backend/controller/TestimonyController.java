@@ -4,8 +4,8 @@ import br.paliar.mayarafurtado.backend.service.TestimonyService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.paliar.mayarafurtado.backend.dto.request.TestimonyRequestDTO;
-import br.paliar.mayarafurtado.backend.dto.response.TestimonyResponseDTO;
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyRequestDTO;
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyResponseDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@RequestMapping("/testimony")
+@RequestMapping("/testimonials")
 public class TestimonyController {
 
 
@@ -34,12 +34,12 @@ public class TestimonyController {
   }
 
   @PutMapping("path/{id}")
-  public ResponseEntity<TestimonyResponseDTO> update(@PathVariable Integer id, @RequestBody TestimonyRequestDTO testimony) {
+  public ResponseEntity<TestimonyResponseDTO> update(@PathVariable String id, @Valid @RequestBody TestimonyRequestDTO testimony) {
     return ResponseEntity.ok(testimonyService.update(id, testimony));
   }
 
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Integer id) {
+  public ResponseEntity<Void> delete(@PathVariable String id) {
     testimonyService.delete(id);
     return ResponseEntity.ok().build();
   }

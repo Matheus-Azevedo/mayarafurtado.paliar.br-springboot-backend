@@ -1,4 +1,4 @@
-package br.paliar.mayarafurtado.backend.dto.request;
+package br.paliar.mayarafurtado.backend.domain.testimony;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package br.paliar.mayarafurtado.backend.configuration;
+package br.paliar.mayarafurtado.backend.infra.configuration;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

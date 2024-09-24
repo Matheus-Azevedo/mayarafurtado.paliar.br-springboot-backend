@@ -1,4 +1,4 @@
-package br.paliar.mayarafurtado.backend.model;
+package br.paliar.mayarafurtado.backend.domain.testimony;
 
 import java.io.Serializable;
 
@@ -11,13 +11,13 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
-@Entity
-@Table(name = "testimony")
+@Table(name = "testimonials")
+@Entity(name = "Testimony")
 public class TestimonyModel implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String id;
 
   @Column(length = 100)
   private String name;

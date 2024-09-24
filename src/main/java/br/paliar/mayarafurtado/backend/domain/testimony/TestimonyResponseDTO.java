@@ -1,11 +1,11 @@
-package br.paliar.mayarafurtado.backend.dto.response;
+package br.paliar.mayarafurtado.backend.domain.testimony;
 
 import lombok.Data;
 
 @Data
 public class TestimonyResponseDTO {
   
-  private Integer id;
+  private String id;
   
   private String name;
   

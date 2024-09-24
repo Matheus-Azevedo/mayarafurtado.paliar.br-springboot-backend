@@ -3,12 +3,12 @@ package br.paliar.mayarafurtado.backend.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import br.paliar.mayarafurtado.backend.model.TestimonyModel;
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyModel;
 
 @Repository
-public interface TestimonyRepository extends JpaRepository<TestimonyModel, Integer> {
+public interface TestimonyRepository extends JpaRepository<TestimonyModel, String> {
 
-  public TestimonyModel findByName(String name);
+  TestimonyModel findByName(String name);
 
-  public TestimonyModel findByTelephone(String telephone);
+  TestimonyModel findByTelephone(String telephone);
 }

@@ -17,6 +17,39 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>4.4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+			<!-- Dependência para Spring Security -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+			<!-- Dependência para testes de segurança -->
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.12.6</version>
+			<!-- Dependência para JWT -->
+		</dependency>
 		
 		<dependency>
 			<groupId>org.springdoc</groupId>
@@ -76,8 +109,7 @@
 			<!-- Dependência para o banco de dados PostgreSQL -->
 		</dependency>
 
-
-	</dependencies>
+ </dependencies>
 
 	<build>
 		<plugins>

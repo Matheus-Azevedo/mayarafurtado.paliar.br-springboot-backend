@@ -1,4 +1,4 @@
-package br.paliar.mayarafurtado.backend.configuration;
+package br.paliar.mayarafurtado.backend.infra.configuration;
 
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.info.Info;
         contact = @Contact(name = "Matheus Eduardo", email = "matheuseduardo.jp@gmail.com")
     )
 )
-public class SpringDocConfig {
+public class SpringDocConfiguration {
     
     @Bean
     public GroupedOpenApi api() {

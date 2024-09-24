@@ -4,10 +4,13 @@ import br.paliar.mayarafurtado.backend.service.TestimonyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import br.paliar.mayarafurtado.backend.dto.request.TestimonyRequestDTO;
-import br.paliar.mayarafurtado.backend.dto.response.TestimonyResponseDTO;
-import br.paliar.mayarafurtado.backend.model.TestimonyModel;
+
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyModel;
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyRequestDTO;
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyResponseDTO;
 import br.paliar.mayarafurtado.backend.repository.TestimonyRepository;
 import java.util.stream.Collectors;
 
@@ -26,7 +29,8 @@ public class TestimonyServiceImplementation implements TestimonyService {
     return modelMapper.map(testimonyRepository.save(testimonyModel), TestimonyResponseDTO.class);
   }
   
-  public TestimonyResponseDTO update(Integer id, TestimonyRequestDTO testimony) {
+  @Transactional
+  public TestimonyResponseDTO update(String id, TestimonyRequestDTO testimony) {
     TestimonyModel testimonyModel = testimonyRepository
                                     .findById(id)
                                     .orElseThrow(() -> new IllegalArgumentException("Testimony not found"));
@@ -36,7 +40,7 @@ public class TestimonyServiceImplementation implements TestimonyService {
     return modelMapper.map(testimonyRepository.save(testimonyModel), TestimonyResponseDTO.class);
   }
   
-  public void delete(Integer id) {
+  public void delete(String id) {
     testimonyRepository.deleteById(id);
   }
   

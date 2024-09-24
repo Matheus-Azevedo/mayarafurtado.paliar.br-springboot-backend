@@ -1,20 +1,21 @@
 package br.paliar.mayarafurtado.backend.service;
 
-import br.paliar.mayarafurtado.backend.dto.request.TestimonyRequestDTO;
-import br.paliar.mayarafurtado.backend.dto.response.TestimonyResponseDTO;
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyRequestDTO;
+import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyResponseDTO;
+
 import java.util.List;
 
 public interface TestimonyService {
 
-    TestimonyResponseDTO save(TestimonyRequestDTO testimonyRequestDTO);
+    public TestimonyResponseDTO save(TestimonyRequestDTO testimonyRequestDTO);
 
-    TestimonyResponseDTO update(Integer id, TestimonyRequestDTO testimonyRequestDTO);
+    public TestimonyResponseDTO update(String id, TestimonyRequestDTO testimonyRequestDTO);
 
-    void delete(Integer id);
+    public void delete(String id);
 
-    List<TestimonyResponseDTO> findAll();
+    public List<TestimonyResponseDTO> findAll();
 
-    TestimonyResponseDTO findByName(String name);
+    public TestimonyResponseDTO findByName(String name);
 
-    TestimonyResponseDTO findByTelephone(String telephone);
+    public TestimonyResponseDTO findByTelephone(String telephone);
 }
