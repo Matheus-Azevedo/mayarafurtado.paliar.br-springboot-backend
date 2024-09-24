@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/testimonials")
 public class TestimonyController {
 
-
   @Autowired
   private TestimonyService testimonyService;
 
