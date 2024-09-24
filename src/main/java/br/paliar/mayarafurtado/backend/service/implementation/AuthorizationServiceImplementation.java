@@ -34,10 +34,10 @@ public class AuthorizationServiceImplementation implements AuthorizationService 
     }
 
     public LoginResponseDTO login(AuthenticationDTO data) {
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
+        final var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
+        final var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.generateToken((UserModel) auth.getPrincipal());
+        final var token = tokenService.generateToken((UserModel) auth.getPrincipal());
         return new LoginResponseDTO(token);
     }
 
