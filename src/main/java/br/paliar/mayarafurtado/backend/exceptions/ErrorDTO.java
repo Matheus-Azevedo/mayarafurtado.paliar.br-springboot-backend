@@ -1,4 +1,4 @@
-package br.paliar.mayarafurtado.backend.dto;
+package br.paliar.mayarafurtado.backend.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

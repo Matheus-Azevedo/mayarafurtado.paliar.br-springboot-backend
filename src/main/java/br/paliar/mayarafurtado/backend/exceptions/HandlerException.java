@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import br.paliar.mayarafurtado.backend.dto.ErrorDTO;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
