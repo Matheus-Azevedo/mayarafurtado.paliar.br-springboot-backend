@@ -18,4 +18,5 @@ public interface TestimonyService {
     public TestimonyResponseDTO findByName(String name);
 
     public TestimonyResponseDTO findByTelephone(String telephone);
+
 }

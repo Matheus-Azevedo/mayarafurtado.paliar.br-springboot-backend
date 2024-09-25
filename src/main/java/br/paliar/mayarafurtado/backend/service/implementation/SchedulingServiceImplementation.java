@@ -17,14 +17,20 @@ import java.time.LocalDateTime;
 @Service
 public class SchedulingServiceImplementation implements SchedulingService {
 
-   @Autowired
-    private SchedulingRepository schedulingRepository;
+    private final SchedulingRepository schedulingRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public SchedulingServiceImplementation(SchedulingRepository schedulingRepository, ModelMapper modelMapper) {
+        this.schedulingRepository = schedulingRepository;
+        this.modelMapper = modelMapper;
+    }
 
     public SchedulingResponseDTO save(SchedulingRequestDTO schedulingRequestDTO) {
         SchedulingModel schedulingModel = modelMapper.map(schedulingRequestDTO, SchedulingModel.class);
+        if (schedulingModel.getPatient() == null) {
+            throw new IllegalArgumentException("Patient not found");
+        }
         return toResponse(schedulingRepository.save(schedulingModel));
     }
 
@@ -39,11 +45,17 @@ public class SchedulingServiceImplementation implements SchedulingService {
     }
 
     public void delete(String id) {
+        if (!schedulingRepository.existsById(id)) {
+            throw new IllegalArgumentException("Scheduling not found");
+        }
         schedulingRepository.deleteById(id);
     }
 
     public List<SchedulingResponseDTO> findAll() {
         List<SchedulingModel> schedulings = schedulingRepository.findAll();
+        if (schedulings.isEmpty()) {
+            throw new IllegalArgumentException("Scheduling not found");
+        }
         return schedulings.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -51,11 +63,17 @@ public class SchedulingServiceImplementation implements SchedulingService {
 
     public SchedulingResponseDTO findByScheduled(LocalDateTime scheduled) {
         SchedulingModel scheduling = schedulingRepository.findByScheduled(scheduled);
+        if (scheduling == null) {
+            throw new IllegalArgumentException("Scheduling not found");
+        }
         return toResponse(scheduling);
     }
 
     public SchedulingResponseDTO findByPatientId(String patientId) {
         SchedulingModel scheduling = schedulingRepository.findByPatientId(patientId);
+        if (scheduling == null) {
+            throw new IllegalArgumentException("Scheduling not found");
+        }
         return toResponse(scheduling);
     }
 

@@ -18,15 +18,21 @@ import java.util.stream.Collectors;
 @Service
 public class TestimonyServiceImplementation implements TestimonyService {
   
-  @Autowired
-  private TestimonyRepository testimonyRepository;
+  private final TestimonyRepository testimonyRepository;
+  private final ModelMapper modelMapper;
 
   @Autowired
-  private ModelMapper modelMapper;
+  public TestimonyServiceImplementation(TestimonyRepository testimonyRepository, ModelMapper modelMapper) {
+      this.testimonyRepository = testimonyRepository;
+      this.modelMapper = modelMapper;
+  }
 
   public TestimonyResponseDTO save(TestimonyRequestDTO testimony) {
     TestimonyModel testimonyModel = modelMapper.map(testimony, TestimonyModel.class);
-    return modelMapper.map(testimonyRepository.save(testimonyModel), TestimonyResponseDTO.class);
+    if (testimonyRepository.existsByTelephone(testimony.getTelephone())) {
+      throw new IllegalArgumentException("Testimony already exists");
+    }
+    return toResponse(testimonyRepository.save(testimonyModel));
   }
   
   @Transactional
@@ -37,28 +43,42 @@ public class TestimonyServiceImplementation implements TestimonyService {
     testimonyModel.setName(testimony.getName());
     testimonyModel.setTelephone(testimony.getTelephone());
     testimonyModel.setTestimony(testimony.getTestimony());
-    return modelMapper.map(testimonyRepository.save(testimonyModel), TestimonyResponseDTO.class);
+    return toResponse(testimonyRepository.save(testimonyModel));
   }
   
   public void delete(String id) {
+    if (!testimonyRepository.existsById(id)) {
+      throw new IllegalArgumentException("Testimony not found");
+    }
     testimonyRepository.deleteById(id);
   }
   
   public List<TestimonyResponseDTO> findAll() {
     List<TestimonyModel> testimonies = testimonyRepository.findAll();
     return testimonies.stream()
-                      .map(testimony -> modelMapper.map(testimony, TestimonyResponseDTO.class))
+                      .map(this::toResponse)
                       .collect(Collectors.toList());
   }
   
   public TestimonyResponseDTO findByName(String name) {
     TestimonyModel testimony = testimonyRepository.findByName(name);
-    return modelMapper.map(testimony, TestimonyResponseDTO.class);
+    if (testimony == null) {
+      throw new IllegalArgumentException("Testimony not found");
+    }
+    return toResponse(testimony);
   }
   
   public TestimonyResponseDTO findByTelephone(String telephone) {
     TestimonyModel testimony = testimonyRepository.findByTelephone(telephone);
+    if (testimony == null) {
+      throw new IllegalArgumentException("Testimony not found");
+    }
+    return toResponse(testimony);
+  }
+
+  private TestimonyResponseDTO toResponse(TestimonyModel testimony) {
     return modelMapper.map(testimony, TestimonyResponseDTO.class);
   }
+
   
 }

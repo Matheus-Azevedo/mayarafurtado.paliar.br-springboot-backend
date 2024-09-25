@@ -8,6 +8,8 @@ import br.paliar.mayarafurtado.backend.domain.testimony.TestimonyModel;
 @Repository
 public interface TestimonyRepository extends JpaRepository<TestimonyModel, String> {
 
+  boolean existsByTelephone(String telephone);
+
   TestimonyModel findByName(String name);
 
   TestimonyModel findByTelephone(String telephone);
