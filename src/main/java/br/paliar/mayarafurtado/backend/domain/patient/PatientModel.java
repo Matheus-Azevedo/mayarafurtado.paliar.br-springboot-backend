@@ -2,6 +2,7 @@ package br.paliar.mayarafurtado.backend.domain.patient;
 
 import java.util.List;
 
+import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationModel;
 import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -59,4 +61,7 @@ public class PatientModel {
 
   @OneToMany(mappedBy = "patient")
   private List<SchedulingModel> schedulings;
+
+  @OneToOne(mappedBy = "patient")
+  private ReactivationModel reactivation;
 }

@@ -4,25 +4,33 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
+
+import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationModel;
+import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationRole;
 import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingModel;
 import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingRequestDTO;
 import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingResponseDTO;
 import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingUpdateRequestDTO;
+import br.paliar.mayarafurtado.backend.repository.ReactivationRepository;
 import br.paliar.mayarafurtado.backend.repository.SchedulingRepository;
 import br.paliar.mayarafurtado.backend.service.SchedulingService;
 import jakarta.transaction.Transactional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
 public class SchedulingServiceImplementation implements SchedulingService {
 
     private final SchedulingRepository schedulingRepository;
+    private final ReactivationRepository reactivationRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public SchedulingServiceImplementation(SchedulingRepository schedulingRepository, ModelMapper modelMapper) {
+    public SchedulingServiceImplementation(SchedulingRepository schedulingRepository, ReactivationRepository reactivationRepository, ModelMapper modelMapper) {
         this.schedulingRepository = schedulingRepository;
+        this.reactivationRepository = reactivationRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -41,6 +49,24 @@ public class SchedulingServiceImplementation implements SchedulingService {
                 .orElseThrow(() -> new IllegalArgumentException("Scheduling not found"));
         schedulingModel.setScheduled(schedulingRequestDTO.getScheduled());
         schedulingModel.setAttended(schedulingRequestDTO.getAttended());
+        // Trigger reactivation
+        if (schedulingRequestDTO.getAttended()) {
+            Optional<ReactivationModel> existingReactivation = reactivationRepository.findByPatientId(schedulingModel.getPatient().getId());
+            if (existingReactivation.isPresent()) {
+                ReactivationModel reactivation = existingReactivation.get();
+                reactivation.setLastService(schedulingModel.getScheduled());
+                reactivation.setClassification(ReactivationRole.HOT);
+                reactivation.setReactivateIn(calculateReactivationDate(schedulingModel.getScheduled()));;
+                reactivationRepository.save(reactivation);
+            } else {
+                ReactivationModel reactivation = new ReactivationModel();
+                reactivation.setLastService(schedulingModel.getScheduled());
+                reactivation.setClassification(ReactivationRole.HOT);
+                reactivation.setPatient(schedulingModel.getPatient());
+                reactivation.setReactivateIn(calculateReactivationDate(schedulingModel.getScheduled()));
+                reactivationRepository.save(reactivation);
+            }
+        }
         return toResponse(schedulingRepository.save(schedulingModel));
     }
 
@@ -88,5 +114,10 @@ public class SchedulingServiceImplementation implements SchedulingService {
         
         return response;
     }
+
+    private LocalDate calculateReactivationDate(LocalDateTime lastService) {
+    // Converte LocalDateTime para LocalDate e adiciona 6 meses
+    return lastService.toLocalDate().plusMonths(6);
+}
 
 }
