@@ -8,6 +8,8 @@ import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingModel;
 @Repository
 public interface SchedulingRepository extends JpaRepository<SchedulingModel, String> {
 
+  boolean existsByPatientIdAndScheduled(String patientId, LocalDateTime scheduled);
+
   SchedulingModel findByScheduled(LocalDateTime scheduled);
 
   SchedulingModel findByPatientId(String patientId);

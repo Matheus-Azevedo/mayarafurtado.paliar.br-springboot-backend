@@ -39,6 +39,15 @@ public class SchedulingServiceImplementation implements SchedulingService {
         if (schedulingModel.getPatient() == null) {
             throw new IllegalArgumentException("Patient not found");
         }
+
+        LocalDateTime scheduled = schedulingModel.getScheduled();
+
+        boolean exists = schedulingRepository.existsByPatientIdAndScheduled(schedulingModel.getPatient().getId(), scheduled);
+
+        if (exists) {
+            throw new IllegalArgumentException("Scheduling already exists");
+        }
+        
         return toResponse(schedulingRepository.save(schedulingModel));
     }
 
