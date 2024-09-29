@@ -36,7 +36,7 @@ public class AuthorizationServiceImplementation implements AuthorizationService 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetails user = userRepository.findByEmail(username);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("Usuário não encontrado");
         }
         return user;
     }
@@ -45,11 +45,11 @@ public class AuthorizationServiceImplementation implements AuthorizationService 
         final var usernamePassword = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
         final var auth = this.authenticationManager.authenticate(usernamePassword);
         if (!auth.isAuthenticated()) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new IllegalArgumentException("Credenciais inválidas");
         }
         final var token = tokenService.generateToken((UserModel) auth.getPrincipal());
         if (token == null) {
-            throw new IllegalArgumentException("Invalid credentials");
+            throw new IllegalArgumentException("Credenciais inválidas");
         }
         return new LoginResponseDTO(token);
     }

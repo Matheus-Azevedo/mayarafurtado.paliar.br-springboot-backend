@@ -33,16 +33,15 @@ public class ReactivationServiceImplementation implements ReactivationService {
     List<ReactivationModel> reactivations = reactivationRepository.findAll();
 
     reactivations.forEach(reactivation -> {
-      // Atualiza a classificação
+      // Businaess rule: Classifica a reativação em HOT, QUIET ou COLD
       ReactivationRole classification = calculateClassification(reactivation.getLastService());
       reactivation.setClassification(classification);
 
-      // Atualiza a data de reativação
+      // Business rule: Calcula a data de reativação
       LocalDate reactivateIn = calculateReactivationDate(reactivation.getLastService());
       reactivation.setReactivateIn(reactivateIn);
     });
 
-    // Salva as reativações atualizadas no banco de dados
     reactivationRepository.saveAll(reactivations);
 
     return reactivations.stream()

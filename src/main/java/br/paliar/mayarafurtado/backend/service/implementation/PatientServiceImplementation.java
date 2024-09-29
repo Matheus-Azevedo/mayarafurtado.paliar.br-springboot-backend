@@ -36,7 +36,7 @@ public class PatientServiceImplementation implements PatientService {
     @Transactional
     public PatientResponseDTO update(String id, PatientRequestDTO patientRequestDTO) {
         PatientModel patientModel = patientRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Patient not found"));
+            .orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
         patientModel.setName(patientRequestDTO.getName());
         patientModel.setPhone(patientRequestDTO.getPhone());
         patientModel.setEmail(patientRequestDTO.getEmail());
@@ -52,7 +52,7 @@ public class PatientServiceImplementation implements PatientService {
 
     public void delete(String id) {
       if (!patientRepository.existsById(id)) {
-          throw new IllegalArgumentException("Patient not found");
+          throw new IllegalArgumentException("Paciente não encontrado");
       }
       patientRepository.deleteById(id);
     }
@@ -60,7 +60,7 @@ public class PatientServiceImplementation implements PatientService {
     public List<PatientResponseDTO> findAll() {
         List<PatientModel> patients = patientRepository.findAll();
         if (patients.isEmpty()) {
-            throw new IllegalArgumentException("Patient not found");
+            throw new IllegalArgumentException("Paciente não encontrado");
         }
         return patients.stream()
                 .map(this::toResponse)
@@ -70,7 +70,7 @@ public class PatientServiceImplementation implements PatientService {
     public PatientResponseDTO findByName(String name) {
         PatientModel patientModel = patientRepository.findByName(name);
         if (patientModel == null) {
-            throw new IllegalArgumentException("Patient not found");
+            throw new IllegalArgumentException("Paciente não encontrado");
         }
         return toResponse(patientModel);
     }
@@ -78,7 +78,7 @@ public class PatientServiceImplementation implements PatientService {
     public PatientResponseDTO findByPhone(String phone) {
         PatientModel patientModel = patientRepository.findByPhone(phone);
         if (patientModel == null) {
-            throw new IllegalArgumentException("Patient not found");
+            throw new IllegalArgumentException("Paciente não encontrado");
         }
         return toResponse(patientModel);
     }

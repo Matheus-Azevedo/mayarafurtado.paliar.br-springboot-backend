@@ -30,7 +30,7 @@ public class TestimonyServiceImplementation implements TestimonyService {
   public TestimonyResponseDTO save(TestimonyRequestDTO testimony) {
     TestimonyModel testimonyModel = modelMapper.map(testimony, TestimonyModel.class);
     if (testimonyRepository.existsByTelephone(testimony.getTelephone())) {
-      throw new IllegalArgumentException("Testimony already exists");
+      throw new IllegalArgumentException("O Depoimento já existe");
     }
     return toResponse(testimonyRepository.save(testimonyModel));
   }
@@ -39,7 +39,7 @@ public class TestimonyServiceImplementation implements TestimonyService {
   public TestimonyResponseDTO update(String id, TestimonyRequestDTO testimony) {
     TestimonyModel testimonyModel = testimonyRepository
                                     .findById(id)
-                                    .orElseThrow(() -> new IllegalArgumentException("Testimony not found"));
+                                    .orElseThrow(() -> new IllegalArgumentException("O Depoimento não foi encontrado"));
     testimonyModel.setName(testimony.getName());
     testimonyModel.setTelephone(testimony.getTelephone());
     testimonyModel.setTestimony(testimony.getTestimony());
@@ -48,7 +48,7 @@ public class TestimonyServiceImplementation implements TestimonyService {
   
   public void delete(String id) {
     if (!testimonyRepository.existsById(id)) {
-      throw new IllegalArgumentException("Testimony not found");
+      throw new IllegalArgumentException("O Depoimento não foi encontrado");
     }
     testimonyRepository.deleteById(id);
   }
@@ -63,7 +63,7 @@ public class TestimonyServiceImplementation implements TestimonyService {
   public TestimonyResponseDTO findByName(String name) {
     TestimonyModel testimony = testimonyRepository.findByName(name);
     if (testimony == null) {
-      throw new IllegalArgumentException("Testimony not found");
+      throw new IllegalArgumentException("O Depoimento não foi encontrado");
     }
     return toResponse(testimony);
   }
@@ -71,7 +71,7 @@ public class TestimonyServiceImplementation implements TestimonyService {
   public TestimonyResponseDTO findByTelephone(String telephone) {
     TestimonyModel testimony = testimonyRepository.findByTelephone(telephone);
     if (testimony == null) {
-      throw new IllegalArgumentException("Testimony not found");
+      throw new IllegalArgumentException("O Depoimento não foi encontrado");
     }
     return toResponse(testimony);
   }
