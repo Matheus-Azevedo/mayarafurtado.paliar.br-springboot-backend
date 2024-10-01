@@ -221,8 +221,8 @@ public class SchedulingServiceImplementation implements SchedulingService {
     }
 
     private LocalDate calculateReactivationDate(LocalDateTime lastService) {
-    // Business rule: A reativação deve ser feita 6 meses após o último atendimento
-    return lastService.toLocalDate().plusMonths(6);
+    // Business rule: A reativação deve ser feita 1 ano após o último serviço
+    return lastService.toLocalDate().plusYears(1);
     }
 
 }
