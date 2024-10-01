@@ -13,5 +13,8 @@ public class SchedulingRequestDTO {
 
   @NotEmpty(message = "Attended is required")
   private String patientId;
+
+  @NotEmpty(message = "Role is required")
+  private String role;
   
 }

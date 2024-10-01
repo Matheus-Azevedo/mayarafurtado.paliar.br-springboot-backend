@@ -11,6 +11,8 @@ public class SchedulingResponseDTO {
   private LocalDateTime scheduled;
   
   private Boolean attended;
+
+  private String role;
   
   private String patientId;
 

@@ -1,10 +1,14 @@
 package br.paliar.mayarafurtado.backend.service.implementation;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationModel;
@@ -20,6 +24,10 @@ import jakarta.transaction.Transactional;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.DayOfWeek;
+import java.time.Duration;
 
 @Service
 public class SchedulingServiceImplementation implements SchedulingService {
@@ -27,6 +35,8 @@ public class SchedulingServiceImplementation implements SchedulingService {
     private final SchedulingRepository schedulingRepository;
     private final ReactivationRepository reactivationRepository;
     private final ModelMapper modelMapper;
+    private final int START_HOUR = 8;  // Horário de início: 08h
+    private final int END_HOUR = 18;   // Horário de término: 18h
 
     @Autowired
     public SchedulingServiceImplementation(SchedulingRepository schedulingRepository, ReactivationRepository reactivationRepository, ModelMapper modelMapper) {
@@ -37,29 +47,42 @@ public class SchedulingServiceImplementation implements SchedulingService {
 
     public SchedulingResponseDTO save(SchedulingRequestDTO schedulingRequestDTO) {
         SchedulingModel schedulingModel = modelMapper.map(schedulingRequestDTO, SchedulingModel.class);
+        
         if (schedulingModel.getPatient() == null) {
             throw new IllegalArgumentException("Paciente não encontrado");
         }
-
+    
         LocalDateTime scheduled = schedulingModel.getScheduled();
-
         LocalDateTime now = LocalDateTime.now();
-
-        // Business rule: A data e hora agendada não pode ser anterior a data e hora atual
+    
+        // Business rule: A data e hora agendada não pode ser anterior à data e hora atual
         if (scheduled.isBefore(now)) {
-            throw new IllegalArgumentException("A data e hora agendada não pode ser anterior a data e hora atual");
+            throw new IllegalArgumentException("A data e hora agendada não pode ser anterior à data e hora atual");
         }
-
+    
+        // Buscar todos os agendamentos do mesmo dia
+        LocalDateTime startOfDay = scheduled.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = scheduled.toLocalDate().atTime(23, 59, 59);
+        List<SchedulingModel> schedulingsOnSameDay = schedulingRepository.findByScheduledBetween(startOfDay, endOfDay);
+    
+        // Business rule: Verificar se há um agendamento em um intervalo menor que 59 minutos
+        for (SchedulingModel existingScheduling : schedulingsOnSameDay) {
+            if (Math.abs(Duration.between(existingScheduling.getScheduled(), scheduled).toMinutes()) < 59) {
+                throw new IllegalArgumentException("Conflito, há um paciente agendado neste horário");
+            }
+        }
+    
+        // Business rule: Verificar se já existe um agendamento para o paciente nesse horário
         boolean exists = schedulingRepository.existsByPatientIdAndScheduled(schedulingModel.getPatient().getId(), scheduled);
-
-        // Business rule: Não pode haver dois agendamentos para o mesmo paciente no mesmo horário
         if (exists) {
             throw new IllegalArgumentException("Já existe um agendamento para o paciente nesse horário");
         }
-        
+    
+        // Salvar o agendamento e retornar a resposta
         return toResponse(schedulingRepository.save(schedulingModel));
     }
-
+    
+    
     @Transactional
     public SchedulingResponseDTO update(String id, SchedulingUpdateRequestDTO schedulingRequestDTO) {
         SchedulingModel schedulingModel = schedulingRepository
@@ -124,6 +147,67 @@ public class SchedulingServiceImplementation implements SchedulingService {
         return toResponse(scheduling);
     }
 
+
+        public Map<String, String> getAvailableTimesForMonth() {
+        Map<String, String> availableTimes = new HashMap<>();
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+
+        // Data inicial será a data atual se estivermos no mês atual
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        if (startDate.isBefore(today)) {
+            startDate = today; // Começa a partir da data atual se a data inicial for passada
+        }
+
+        // Último dia do mês
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        // Formato de data dd/MM
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        // Loop através de cada dia do mês
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            // Ignorar sábados e domingos
+            if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                continue;
+            }
+
+            // Gerar horários disponíveis para o dia
+            List<LocalDateTime> availableSlots = getAvailableSlotsForDay(date);
+
+            if (!availableSlots.isEmpty()) {
+                // Formatar os horários disponíveis como "08:00 - 09:00 - 10:00"
+                String formattedSlots = availableSlots.stream()
+                        .map(slot -> slot.format(timeFormatter))
+                        .reduce((slot1, slot2) -> slot1 + " - " + slot2)
+                        .orElse("");
+
+                // Adicionar ao mapa com o formato "dd/MM: 08:00 - 09:00 - 10:00"
+                availableTimes.put(date.format(dateFormatter), formattedSlots);
+            }
+        }
+
+        return availableTimes;
+    }
+
+    // Gera os horários disponíveis para um dia
+    private List<LocalDateTime> getAvailableSlotsForDay(LocalDate date) {
+        List<LocalDateTime> availableSlots = new ArrayList<>();
+        LocalDateTime startTime = date.atTime(START_HOUR, 0); // Começa às 08:00
+        LocalDateTime endTime = date.atTime(END_HOUR, 0);     // Termina às 18:00
+
+        // Loop a cada 1 hora
+        while (startTime.isBefore(endTime)) {
+            availableSlots.add(startTime);
+            startTime = startTime.plus(1, ChronoUnit.HOURS); // Intervalo de 1 hora
+        }
+
+        return availableSlots;
+    }
+
+
     private SchedulingResponseDTO toResponse(SchedulingModel scheduling) {
         SchedulingResponseDTO response = modelMapper.map(scheduling, SchedulingResponseDTO.class);
         
@@ -139,6 +223,6 @@ public class SchedulingServiceImplementation implements SchedulingService {
     private LocalDate calculateReactivationDate(LocalDateTime lastService) {
     // Business rule: A reativação deve ser feita 6 meses após o último atendimento
     return lastService.toLocalDate().plusMonths(6);
-}
+    }
 
 }

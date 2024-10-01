@@ -6,6 +6,7 @@ import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingResponseDTO;
 import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingUpdateRequestDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SchedulingService {
 
@@ -20,5 +21,7 @@ public interface SchedulingService {
     public SchedulingResponseDTO findByScheduled(LocalDateTime scheduled);
 
     public SchedulingResponseDTO findByPatientId(String patientId);
+
+    public Map<String, String> getAvailableTimesForMonth();   
   
 }

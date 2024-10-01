@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.time.LocalDateTime;
 import org.springframework.web.bind.annotation.RequestBody;
 import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingRequestDTO;
@@ -17,6 +18,7 @@ import br.paliar.mayarafurtado.backend.domain.scheduling.SchedulingUpdateRequest
 import br.paliar.mayarafurtado.backend.service.SchedulingService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/scheduling")
@@ -54,6 +56,11 @@ public class SchedulingController {
   @GetMapping("/findByPatientId/{patientId}")
   public ResponseEntity<SchedulingResponseDTO> findByPatientId(@PathVariable String patientId) {
     return ResponseEntity.ok(schedulingService.findByPatientId(patientId));
+  }
+
+  @GetMapping("/available-times/month")
+    public Map<String, String> getAvailableTimesForMonth() {
+        return schedulingService.getAvailableTimesForMonth();
   }
 
 }

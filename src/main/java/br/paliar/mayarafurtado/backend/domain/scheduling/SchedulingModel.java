@@ -30,6 +30,8 @@ public class SchedulingModel {
   private LocalDateTime scheduled;
   
   private Boolean attended = false;
+
+  private SchedulingRole role;
   
   @ManyToOne
   @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
