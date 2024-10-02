@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationModel;
 import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationResponseDTO;
 import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationRole;
+import br.paliar.mayarafurtado.backend.domain.reactivation.ReactivationUpdateRequestDTO;
 import br.paliar.mayarafurtado.backend.repository.ReactivationRepository;
 import br.paliar.mayarafurtado.backend.service.ReactivationService;
 
@@ -47,14 +48,14 @@ public class ReactivationServiceImplementation implements ReactivationService {
         .collect(Collectors.toList());
   }
 
-  public ReactivationResponseDTO update(String id, LocalDate currentDate) {
+  public ReactivationResponseDTO update(String id, ReactivationUpdateRequestDTO  reactivationUpdateRequestDTO) {
     ReactivationModel reactivation = reactivationRepository.findById(id).orElse(null);
     if (reactivation == null) {
       throw new RuntimeException("Reativação não encontrada");
     }
 
     // // Business rule: Calcula a data de reativação
-    LocalDate reactivateIn = calculateReactivationDate(currentDate);
+    LocalDate reactivateIn = calculateReactivationDate(reactivationUpdateRequestDTO.getCurrentDate());
     reactivation.setReactivateIn(reactivateIn);
 
     reactivationRepository.save(reactivation);
