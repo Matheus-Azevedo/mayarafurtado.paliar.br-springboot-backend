@@ -31,15 +31,13 @@ public class ReactivationServiceImplementation implements ReactivationService {
 
   public List<ReactivationResponseDTO> findAll() {
     List<ReactivationModel> reactivations = reactivationRepository.findAll();
-
+    if (reactivations.isEmpty()) {
+      throw new RuntimeException("Nenhuma reativação encontrada");
+    }
     reactivations.forEach(reactivation -> {
       // Businaess rule: Classifica a reativação em HOT, QUIET ou COLD
       ReactivationRole classification = calculateClassification(reactivation.getLastService());
       reactivation.setClassification(classification);
-
-      // Business rule: Calcula a data de reativação
-      LocalDate reactivateIn = calculateReactivationDate(reactivation.getLastService());
-      reactivation.setReactivateIn(reactivateIn);
     });
 
     reactivationRepository.saveAll(reactivations);
@@ -47,6 +45,21 @@ public class ReactivationServiceImplementation implements ReactivationService {
     return reactivations.stream()
         .map(this::toResponse)
         .collect(Collectors.toList());
+  }
+
+  public ReactivationResponseDTO update(String id, LocalDate currentDate) {
+    ReactivationModel reactivation = reactivationRepository.findById(id).orElse(null);
+    if (reactivation == null) {
+      throw new RuntimeException("Reativação não encontrada");
+    }
+
+    // // Business rule: Calcula a data de reativação
+    LocalDate reactivateIn = calculateReactivationDate(currentDate);
+    reactivation.setReactivateIn(reactivateIn);
+
+    reactivationRepository.save(reactivation);
+
+    return toResponse(reactivation);
   }
 
   public ReactivationResponseDTO toResponse(ReactivationModel reactivation) {
@@ -73,9 +86,9 @@ public class ReactivationServiceImplementation implements ReactivationService {
     }
   }
 
-  private LocalDate calculateReactivationDate(LocalDateTime lastService) {
-    // A próxima data de reativação é sempre 6 meses após o último atendimento
-    return lastService.toLocalDate().plusMonths(6);
+  private LocalDate calculateReactivationDate(LocalDate lastService) {
+    // A próxima data de reativação é sempre 12 meses após o último atendimento
+    return lastService.plusMonths(12);
   }
 
   

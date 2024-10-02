@@ -1,7 +1,7 @@
 package br.paliar.mayarafurtado.backend.domain.reactivation;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import br.paliar.mayarafurtado.backend.domain.patient.PatientModel;
 import jakarta.persistence.Entity;

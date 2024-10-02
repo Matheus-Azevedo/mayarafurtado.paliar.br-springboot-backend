@@ -7,13 +7,13 @@ import lombok.Data;
 @Data
 public class ReactivationRequestDTO {
     
-    @NotEmpty(message = "Patient ID is required")
+    @NotEmpty(message = "O ID do paciente é obrigatório")
     private String patientId;
     
-    @NotEmpty(message = "Last service is required")
+    @NotEmpty(message = "O último serviço é obrigatório")
     private String lastService;
     
-    @NotNull(message = "Classification is required")
+    @NotNull(message = "A classificação é obrigatória")
     private ReactivationRole classification;
   
 }

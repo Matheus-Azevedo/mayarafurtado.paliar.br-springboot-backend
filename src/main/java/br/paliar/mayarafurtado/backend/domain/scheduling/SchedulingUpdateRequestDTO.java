@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class SchedulingUpdateRequestDTO {
   
-  @NotNull(message = "Scheduled is required")
+  @NotNull(message = "A Data de Agendamento é obrigatória")
   private LocalDateTime scheduled;
 
-  @NotNull(message = "Attended is required")
+  @NotNull(message = "A Confirmação de Presença é obrigatória")
   private Boolean attended;
 
 }

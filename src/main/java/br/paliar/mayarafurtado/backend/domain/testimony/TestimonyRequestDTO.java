@@ -6,13 +6,13 @@ import lombok.Data;
 @Data
 public class TestimonyRequestDTO {
   
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Nome é obrigatório")
   private String name;
   
-  @NotEmpty(message = "Telephone is required")
+  @NotEmpty(message = "Telefone é obrigatório")
   private String telephone;
   
-  @NotEmpty(message = "Testimony is required")
+  @NotEmpty(message = "Depoimento é obrigatório")
   private String testimony;
 
 }

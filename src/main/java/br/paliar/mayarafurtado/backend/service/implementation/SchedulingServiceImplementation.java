@@ -82,34 +82,31 @@ public class SchedulingServiceImplementation implements SchedulingService {
         return toResponse(schedulingRepository.save(schedulingModel));
     }
     
-    
     @Transactional
     public SchedulingResponseDTO update(String id, SchedulingUpdateRequestDTO schedulingRequestDTO) {
         SchedulingModel schedulingModel = schedulingRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado"));
+
         schedulingModel.setScheduled(schedulingRequestDTO.getScheduled());
         schedulingModel.setAttended(schedulingRequestDTO.getAttended());
-        // Business rule: Se o agendamento foi atendido, atualiza a reativação do paciente
+
         if (schedulingRequestDTO.getAttended()) {
-            Optional<ReactivationModel> existingReactivation = reactivationRepository.findByPatientId(schedulingModel.getPatient().getId());
-            if (existingReactivation.isPresent()) {
-                ReactivationModel reactivation = existingReactivation.get();
-                reactivation.setLastService(schedulingModel.getScheduled());
-                reactivation.setClassification(ReactivationRole.HOT);
-                // Business rule: Calcula a data de reativação
-                reactivation.setReactivateIn(calculateReactivationDate(schedulingModel.getScheduled()));;
-                reactivationRepository.save(reactivation);
-            } else {
-                ReactivationModel reactivation = new ReactivationModel();
-                reactivation.setLastService(schedulingModel.getScheduled());
-                reactivation.setClassification(ReactivationRole.HOT);
-                reactivation.setPatient(schedulingModel.getPatient());
-                reactivation.setReactivateIn(calculateReactivationDate(schedulingModel.getScheduled()));
-                reactivationRepository.save(reactivation);
-            }
+            handlePatientReactivation(schedulingModel);
         }
+
         return toResponse(schedulingRepository.save(schedulingModel));
+    }
+
+    private void handlePatientReactivation(SchedulingModel schedulingModel) {
+        Optional<ReactivationModel> existingReactivation = 
+                reactivationRepository.findByPatientId(schedulingModel.getPatient().getId());
+        ReactivationModel reactivation = existingReactivation.orElse(new ReactivationModel());
+        reactivation.setLastService(schedulingModel.getScheduled());
+        reactivation.setClassification(ReactivationRole.HOT); // Classificação HOT (paciente quente)
+        reactivation.setPatient(schedulingModel.getPatient());
+        reactivation.setReactivateIn(calculateReactivationDate(schedulingModel.getScheduled()));
+        reactivationRepository.save(reactivation);
     }
 
     public void delete(String id) {
@@ -147,64 +144,90 @@ public class SchedulingServiceImplementation implements SchedulingService {
         return toResponse(scheduling);
     }
 
-
-        public Map<String, String> getAvailableTimesForMonth() {
+    public Map<String, String> getAvailableTimesForMonth() {
         Map<String, String> availableTimes = new HashMap<>();
         LocalDate today = LocalDate.now();
         int year = today.getYear();
         int month = today.getMonthValue();
-
+    
         // Data inicial será a data atual se estivermos no mês atual
         LocalDate startDate = LocalDate.of(year, month, 1);
         if (startDate.isBefore(today)) {
             startDate = today; // Começa a partir da data atual se a data inicial for passada
         }
-
+    
         // Último dia do mês
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
-
+    
         // Formato de data dd/MM
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
+    
         // Loop através de cada dia do mês
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             // Ignorar sábados e domingos
             if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
                 continue;
             }
-
+    
             // Gerar horários disponíveis para o dia
             List<LocalDateTime> availableSlots = getAvailableSlotsForDay(date);
-
+    
             if (!availableSlots.isEmpty()) {
                 // Formatar os horários disponíveis como "08:00 - 09:00 - 10:00"
                 String formattedSlots = availableSlots.stream()
                         .map(slot -> slot.format(timeFormatter))
                         .reduce((slot1, slot2) -> slot1 + " - " + slot2)
                         .orElse("");
-
+    
                 // Adicionar ao mapa com o formato "dd/MM: 08:00 - 09:00 - 10:00"
                 availableTimes.put(date.format(dateFormatter), formattedSlots);
             }
         }
-
+    
         return availableTimes;
     }
-
+    
     // Gera os horários disponíveis para um dia
     private List<LocalDateTime> getAvailableSlotsForDay(LocalDate date) {
         List<LocalDateTime> availableSlots = new ArrayList<>();
         LocalDateTime startTime = date.atTime(START_HOUR, 0); // Começa às 08:00
         LocalDateTime endTime = date.atTime(END_HOUR, 0);     // Termina às 18:00
-
+    
+        // Obter os horários já ocupados para o dia
+        List<LocalDateTime> occupiedSlots = getOccupiedSlotsForDay(date);
+    
         // Loop a cada 1 hora
         while (startTime.isBefore(endTime)) {
-            availableSlots.add(startTime);
+            // Verifica se o horário está ocupado
+            if (!occupiedSlots.contains(startTime)) {
+                availableSlots.add(startTime); // Adiciona à lista se não estiver ocupado
+            }
             startTime = startTime.plus(1, ChronoUnit.HOURS); // Intervalo de 1 hora
         }
-
+    
         return availableSlots;
+    }
+    
+    // Método para buscar os horários ocupados em um dia
+    private List<LocalDateTime> getOccupiedSlotsForDay(LocalDate date) {
+        // Cria a lista de horários ocupados
+        List<LocalDateTime> occupiedSlots = new ArrayList<>();
+        
+        // Define o início e fim do dia para o qual deseja buscar os agendamentos
+        LocalDateTime startOfDay = date.atStartOfDay(); // 00:00 do dia
+        LocalDateTime endOfDay = date.atTime(23, 59, 59); // 23:59 do dia
+
+        // Busca os agendamentos entre o início e o fim do dia
+        List<SchedulingModel> schedulingsOnDay = schedulingRepository.findByScheduledBetween(startOfDay, endOfDay);
+
+        // Itera sobre os agendamentos encontrados e adiciona o horário do agendamento à lista de horários ocupados
+        for (SchedulingModel scheduling : schedulingsOnDay) {
+            occupiedSlots.add(scheduling.getScheduled());
+        }
+
+        // Retorna a lista de horários ocupados
+        return occupiedSlots;
     }
 
 
@@ -221,8 +244,8 @@ public class SchedulingServiceImplementation implements SchedulingService {
     }
 
     private LocalDate calculateReactivationDate(LocalDateTime lastService) {
-    // Business rule: A reativação deve ser feita 1 ano após o último serviço
-    return lastService.toLocalDate().plusYears(1);
+    // Business rule: A reativação deve ser feita 1 ano (12 meses) após o último serviço
+    return lastService.toLocalDate().plusMonths(12);
     }
 
 }

@@ -6,34 +6,34 @@ import lombok.Data;
 @Data
 public class PatientRequestDTO {
 
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Nome é obrigatório")
   private String name;
 
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Telefone é obrigatório")
   private String phone;
 
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Email é obrigatório")
   private String email;
 
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Data de nascimento é obrigatório")
   private String birthDate;
   
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "CPF é obrigatório")
   private String cpf;
   
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Endereço é obrigatório")
   private String address;
   
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Bairro é obrigatório")
   private String district;
   
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Cidade é obrigatório")
   private String city;
 
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "Estado é obrigatório")
   private String state;
   
-  @NotEmpty(message = "Name is required")
+  @NotEmpty(message = "CEP é obrigatório")
   private String zipCode;
   
 }

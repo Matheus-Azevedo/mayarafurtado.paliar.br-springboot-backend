@@ -8,13 +8,13 @@ import lombok.Data;
 @Data
 public class SchedulingRequestDTO {
 
-  @NotNull(message = "Scheduled is required")
+  @NotNull(message = "A Data de Agendamento é obrigatória")
   private LocalDateTime scheduled;
 
-  @NotEmpty(message = "Attended is required")
+  @NotEmpty(message = "O ID do paciente é obrigatório")
   private String patientId;
 
-  @NotEmpty(message = "Role is required")
+  @NotEmpty(message = "O Tipo de Agendamento é obrigatório")
   private String role;
   
 }
